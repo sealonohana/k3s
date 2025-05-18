@@ -2,6 +2,15 @@ name: Build K3s
 
 on:
   workflow_dispatch:
+   inputs:
+    arch:
+      type: string
+      description: 'Architecture to build'
+      default: 'ubuntu-latest'
+    upload-image:
+      type: boolean
+      required: false
+      default: false
   workflow_call:
    inputs:
     arch:
