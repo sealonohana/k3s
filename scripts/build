@@ -104,17 +104,6 @@ fi
 
 mkdir -p bin
 
-# Run Seal Security scan if token is provided
-if [ -n "${SEAL_TOKEN}" ]; then
-    echo "Running Seal Security scan..."
-    if ! command -v seal &> /dev/null; then
-        echo "Installing Seal CLI..."
-        # https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest
-        curl -sL https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest -o seal
-    fi
-    seal scan --token "${SEAL_TOKEN}" --project k3s --target . --package-manager go
-fi
-
 if [ ${ARCH} = armv7l ] || [ ${ARCH} = arm ]; then
     export GOARCH="arm"
     export GOARM="7"
@@ -183,6 +172,20 @@ if [ ! -x ${INSTALLBIN}/cni${BINARY_POSTFIX} ]; then
 fi
 
 echo Building k3s
+
+go mod download
+SEAL_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImJhYzE2Mjc3In0.eyJzdWIiOiI4YWE5M2Y4My02NTAwLTQxMWYtYjY3OC1iZWM1NTg3OGZiYTMiLCJ0eXBlIjoidGVuYW50QWNjZXNzVG9rZW4iLCJ0ZW5hbnRJZCI6IjI5YzQyYjZhLThiNTEtNDMxYS05MTY1LWEwZmI4YmJkZWFmYiIsImFwcGxpY2F0aW9uSWQiOiIwMWQ3NTcxMy04NjZlLTRlZGYtODQ3Zi1lZDkwYTk0Nzg1ZGIiLCJyb2xlcyI6WyJGRVRDSC1ST0xFUy1CWS1BUEkiXSwicGVybWlzc2lvbnMiOlsiRkVUQ0gtUEVSTUlTU0lPTlMtQlktQVBJIl0sImF1ZCI6ImJhYzE2Mjc3LTVjYmUtNDA3Yy04MjM5LWRmZmY3Mzk4ZWIwZSIsImlzcyI6Imh0dHBzOi8vbG9naW4uc2VhbHNlY3VyaXR5LmlvIiwiaWF0IjoxNzQ3NTUzNTU4LCJleHAiOjE3NDc2Mzk5NTh9.dxnWNgCzMEW5BqoMEY0-TKtgHcRifSH3-iti6GEq0GeKWvVSe0BUzuKZSRk7CbyWtr20P7EwM1ULVYuYvwWAfoDqphfLmnrMpuoA-Fs8e0GZY5wMyfU0oe82OzwbxavdOy3Xv2xGnXwQO-wyzKBVsqGPqoGMa26vwL4SliaRAA5HPY4vLefS9QKjWrkbDGOuO1h6JwX0KIXEuWyy9yGCNu_74N8HXlULW10znKH3xU-xQ1Qx1n49z3lx8FW3fbV3n3UzmPRdlYdV_Bp9YJg8uWYctX694M70Hn2dYl5PqaS98-W2wIo7OvKMj_69DYaQCRe5U1NJbnsXUjNjed4mKA"
+# Run Seal Security scan if token is provided
+if [ -n "${SEAL_TOKEN}" ]; then
+    echo "Running Seal Security scan..."
+    if ! command -v seal &> /dev/null; then
+        echo "Installing Seal CLI..."
+        # https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest
+        curl -sL https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest -o seal
+        chmod +x seal
+    fi
+    seal scan --token "${SEAL_TOKEN}" --project k3s --target . --package-manager go
+fi
 CGO_ENABLED=1 "${GO}" build $BLDFLAGS -tags "$TAGS" -buildvcs=false -gcflags="all=${GCFLAGS}" -ldflags "$VERSIONFLAGS $LDFLAGS $STATIC" -o bin/k3s${BINARY_POSTFIX} ./cmd/server
 
 for i in "${k3s_binaries[@]}"; do
