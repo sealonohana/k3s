@@ -181,8 +181,8 @@ if [ -n "${SEAL_TOKEN}" ]; then
     if ! command -v seal &> /dev/null; then
         echo "Installing Seal CLI..."
         # https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest
-        curl -sL https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest -o seal
-        chmod +x seal
+        curl -sL https://github.com/seal-community/cli/releases/download/latest/seal-linux-amd64-latest -o /bin/seal
+        chmod +x /bin/seal
     fi
     seal scan --token "${SEAL_TOKEN}" --project k3s --target . --package-manager go
 fi
