@@ -43,17 +43,9 @@ jobs:
     steps:
     - name: Checkout K3s
       uses: actions/checkout@v4
-    - name: Seal Security Scan
-      if: inputs.seal-token != ''
-      uses: seal-community/cli-action@latest
-      with:
-        mode: scan
-        token: ${{ inputs.seal-token }}
-        project: k3s
-        verbosity: v
     - name: Build K3s binary
       run: |
-        DOCKER_BUILDKIT=1 SKIP_IMAGE=1 SKIP_AIRGAP=1 SKIP_VALIDATE=1 GOCOVER=1 make
+        DOCKER_BUILDKIT=1 SKIP_IMAGE=1 SKIP_AIRGAP=1 SKIP_VALIDATE=1 GOCOVER=1 SEAL_TOKEN=${{ inputs.seal-token }} make
         sha256sum dist/artifacts/k3s | sed 's|dist/artifacts/||' > dist/artifacts/k3s.sha256sum
     - name: Build K3s image
       if: inputs.upload-image == true
@@ -81,17 +73,9 @@ jobs:
     steps:
     - name: Checkout K3s
       uses: actions/checkout@v4
-    - name: Seal Security Scan
-      if: inputs.seal-token != ''
-      uses: seal-community/cli-action@latest
-      with:
-        mode: scan
-        token: ${{ inputs.seal-token }}
-        project: k3s
-        verbosity: v
     - name: Build K3s binary
       run: |
-        DOCKER_BUILDKIT=1 SKIP_IMAGE=1 SKIP_AIRGAP=1 SKIP_VALIDATE=1 GOCOVER=1 GOOS=windows make
+        DOCKER_BUILDKIT=1 SKIP_IMAGE=1 SKIP_AIRGAP=1 SKIP_VALIDATE=1 GOCOVER=1 GOOS=windows SEAL_TOKEN=${{ inputs.seal-token }} make
         sha256sum dist/artifacts/k3s.exe | sed 's|dist/artifacts/||' > dist/artifacts/k3s.exe.sha256sum
     - name: "Upload K3s Artifacts"
       uses: actions/upload-artifact@v4
