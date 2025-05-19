@@ -11,11 +11,6 @@ on:
       type: boolean
       required: false
       default: false
-    seal-token:
-      type: string
-      description: 'Seal Security token for vulnerability scanning'
-      required: false
-      default: ''
   workflow_call:
    inputs:
     arch:
